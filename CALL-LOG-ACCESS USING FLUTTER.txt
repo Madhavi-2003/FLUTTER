@@ -1,0 +1,163 @@
+name: call_log_access
+description: "A new Flutter project."
+
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.6 <4.0.0'
+
+
+dependencies:
+  flutter:
+    sdk: flutter
+  call_log: ^4.0.0
+  cupertino_icons: ^1.0.2
+  fast_contacts: ^1.1.1
+  permission_handler: ^11.0.1
+  intl: ^0.17.0
+  google_maps_flutter: ^2.1.1  # Add this line for place-related queries
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+ 
+  flutter_lints: ^3.0.1
+
+
+flutter:
+  uses-material-design: true
+TextEditingController nameController = TextEditingController();
+        TextEditingController phoneController = TextEditingController();
+        TextEditingController durationController = TextEditingController();
+
+        return AlertDialog(
+          title: Text('Add New Call Log'),
+          content: Column(
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Caller Name',
+                  icon: Icon(Icons.person),
+                ),
+              ),
+              TextField(
+                controller: phoneController,
+                decoration: InputDecoration(
+                  labelText: 'Phone Number',
+                  icon: Icon(Icons.phone),
+                ),
+              ),
+              TextField(
+                controller: durationController,
+                decoration: InputDecoration(
+                  labelText: 'Call Duration',
+                  icon: Icon(Icons.timer),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _addNewCallLog(
+                  nameController.text,
+                  phoneController.text,
+                  durationController.text,
+                );
+                Navigator.pop(context);
+              },
+              child: Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(
+          child: Text(widget.title),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: _sortCallLogs,
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: searchController,
+              onChanged: _searchCallLogs,
+              decoration: InputDecoration(
+                labelText: 'Search',
+                suffixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: CallLogList(callLogs: filteredCallLogs),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddCallLogDialog();
+        },
+        tooltip: 'Add New Call Log',
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class CallLogList extends StatelessWidget {
+  final List<CustomCallLog> callLogs;
+
+  CallLogList({required this.callLogs});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: callLogs.length,
+      itemBuilder: (context, index) {
+        return Card(
+          elevation: 4.0,
+          margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+          child: ListTile(
+            title: Text(callLogs[index].callerName),
+            subtitle: Text(callLogs[index].phoneNumber),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(callLogs[index].callDuration),
+                Text(
+                  DateFormat('HH:mm').format(callLogs[index].timestamp!),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
